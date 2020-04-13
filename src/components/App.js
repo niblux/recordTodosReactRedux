@@ -20,6 +20,9 @@ function App({ todos, dispatch }) {
 
     // add
     const add = (e) => {
+        if (e.target.value == '') {
+            return
+        }
         const { name, value } = e.target;
         if (e && e.key === 'Enter') {
             dispatch(addTodo({ [name]: value }));
