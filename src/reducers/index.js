@@ -1,33 +1,29 @@
 import { ADD_TODO, REMOVE_TODO, UPDATE_TODO } from '../actions';
 import { combineReducers } from 'redux';
 
-let id = 1;
+// let id = Math.floor(Math.random() * 100);
 
 const initialState = [
     {
-        id: id++,
+        id: 1,
         text: 'Cashews',
     },
-    {
-        id: id++,
-        text: 'Chia',
-    }
 ]
 
 function todos(state = initialState, action) {
     switch (action.type) {
         case ADD_TODO:
             return [
-                { id: id++, text: action.payload.text },
+                { id: state.reduce((maxId, todo) => Math.max(todo.id, maxId), -1) + 1, text: action.payload.text },
                 ...state
             ]
         case REMOVE_TODO:
             return state.filter(item => item.id !== action.id);
         case UPDATE_TODO:
-            return state.map(todo => console.log('>>> TOD UPDATE', action) ||
+            return state.map(todo =>
                 todo.id === action.id ?
-                { ...todo, text: action.text } :
-                todo
+                    { ...todo, text: action.text } :
+                    todo
             )
         default:
             return state;
