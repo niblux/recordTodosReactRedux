@@ -1,3 +1,26 @@
-ul li {
-    display: inline;
+
+
+.container {
+    display: grid;
+    grid-template-columns: 100px 1fr 1fr 100px;
+    grid-template-rows: 25% auto;
 }
+
+
+.item-a {
+    grid-column-start: 2;
+    grid-column-end: five;
+    grid-row-start: row1-start;
+    grid-row-end: 3;
+    border:solid 1px black;
+    padding: 10px;
+  }
+
+  .item-b {
+    grid-column-start: 3;
+    grid-column-end: five;
+    grid-row-start: row1-start;
+    grid-row-end: 3;
+    border:solid 1px black;
+    padding: 10px;
+  }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 function Record(props) {
-    console.log('props', props);
+    // console.log('props', props);
 
     const intitialState = [{ val: '', time: Date.now() }]
     const rec = useRef('null');
@@ -17,9 +17,9 @@ function Record(props) {
     }
 
     const storeRecordings = () => {
-        console.log('recordings', recordings);
+        // console.log('recordings', recordings);
         return recordings && recordings.reduce((prev, cur, index, array) => {
-            console.log('>>> in the storing', array)
+            // console.log('>>> in the storing', array)
             if (cur.val.length >= 1) {
                 return prev.concat({ value: cur.val });
             }
@@ -44,7 +44,7 @@ function Record(props) {
     // console.log('result', result);
 
 
-    useEffect(() => { storeEvents() }, [props.events]);
+    // useEffect(() => { storeEvents() }, [props.events]);
 
     return (
         <>

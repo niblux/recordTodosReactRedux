@@ -7,8 +7,13 @@ const initialState = [
     {
         id: 1,
         text: 'Cashews',
-    },
+    // },
 ]
+
+// function getActionState(state = '', actionState) {
+//     console.log('actionState', actionState);
+//     return actionState;
+// }
 
 function todos(state = initialState, action) {
     switch (action.type) {

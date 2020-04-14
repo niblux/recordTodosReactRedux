@@ -9,6 +9,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 const logger = store => next => action => {
     console.log('dispatching', action);
     let result = next(action);
+    console.log('result', result);
     console.log('next state', store.getState());
     return result;
 }
@@ -47,6 +48,8 @@ const currentState = store.getState();
 const unsubscribe = store.subscribe(() => console.log('current State', currentState));
 
 unsubscribe();
+
+export default store;
 
 ReactDOM.render(
     <Provider store={store}>
