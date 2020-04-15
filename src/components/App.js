@@ -2,91 +2,19 @@ import React, { useState, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { addTodo, updateTodo, removeTodo } from '../actions/index';
 import Record from './Record';
-import store from '../index';
 import '../App.css'
 
 function App({ todos, dispatch, }) {
-    console.log('todos', todos);
-
-    const recs = [
-        // {
-        //     id: 1,
-        //     name: 'Test todo',
-        // },
-        // {
-        //     id: 2,
-        //     name: 'Test todo',
-        // },
-        // {
-        //     id: 3,
-        //     name: 'Test todo',
-        // },
-        // {
-        //     id: 4,
-        //     name: 'Test todo',
-        // },
-    ]
 
     let input = useRef('null');
     let parent = useRef('null');
 
     const [editing, setEditing] = useState(null);
     const [events, setEvents] = useState([]);
-    const [recordedTodos, saveRecords] = useState(recs);
-    const [playback, setPlayback] = useState([]);
-    const [recordings, setRecordings] = useState([]);
-
-    // saveRecords(recs);
-
 
     const recordInput = (e) => {
         const { value } = e.target;
-        setEvents([...events, { value }]);
-    }
-
-    // useEffect(() => {
-    //     saveRecords(todos)
-    // })
-
-    // const storedEvents = events.map(rec => { setRecordings([...recordings, rec])})
-
-
-    // const inputRecordings = events && events.reduce((prev, cur, index, array) => {
-    //     if (cur.val.length >= 1) {
-    //         return prev.concat({ value: cur.val });
-    //     }
-    //     return prev
-    // }, [])
-
-    store.subscribe((x) => {
-        console.log(store);
-    })
-
-
-    const processTodos = (recTodos) => {
-        console.log('recTodos', recTodos);
-        let tempArr = [];
-        return recTodos && recTodos.length > 1 && recTodos.map(item => {
-            switch (todo.type) {
-                case 'ADD_TODO':
-                    tempArr.push(item);
-                    playEvent(tempArr)
-                case 'REMOVE_TODO':
-                    tempArr = tempArr.filter(remove => item.id !== remove.id);
-                    playEvent(tempArr)
-                default:
-                    break;
-            }
-            return tempArr;
-        })
-    }
-
-    const playEvent = (result) => {
-        console.log('result', result);
-        let counter = 1000;
-        // return result.map(item => {
-        setTimeout(() => result, counter = counter + 1000);
-        // })
+        setEvents([...events, value]);
     }
 
     // add
@@ -118,12 +46,9 @@ function App({ todos, dispatch, }) {
         }
     };
 
-
     return (
         <>
-            <div onClickCapture={(e) => e ? setEditing(null) : e} ref={parent}>
-                <Record events={events} />
-
+            <div>
                 <div className="container">
 
                     <div className="item-a">
@@ -141,19 +66,11 @@ function App({ todos, dispatch, }) {
                                 )
                             }
                         </ul>
-                        <button onClick={(e) => processTodos(recordedTodos)} >Play todos</button>
                     </div>
-                    <div className='item-b'>
-                        <p><input type="text" id="text" name="text"></input></p>
-                        <ul>
-                            {
-                                recs && recs.map((recTodo) =>
-                                    <li key={recTodo.id}>
-                                        {recTodo.name}
-                                    </li>
-                                )
-                            }
-                        </ul>
+
+                    <div className="item-b">
+                        <Record events={events} />
+
                     </div>
 
                 </div>

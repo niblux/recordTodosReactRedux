@@ -1,7 +1,5 @@
-import { ADD_TODO, REMOVE_TODO, UPDATE_TODO } from '../actions';
+import { ADD_TODO, REMOVE_TODO, UPDATE_TODO, SET_VISIBILITY_FILTER, TOGGLE_TODO, CLEAR_RECORDINGS } from '../actions';
 import { combineReducers } from 'redux';
-
-// let id = Math.floor(Math.random() * 100);
 
 const initialState = [
     {
@@ -11,13 +9,30 @@ const initialState = [
     },
 ]
 
-// function getActionState(state = '', actionState) {
-//     console.log('actionState', actionState);
-//     return actionState;
+// function clearRecordings(state = [], action) {
+//     switch (action.type) {
+//         case CLEAR_RECORDINGS:
+//             return []
+//     }
 // }
 
 function todos(state = initialState, action) {
     switch (action.type) {
+        case SET_VISIBILITY_FILTER:
+            return Object.assign({}, state, {
+                visibilityFilter: action.filter
+            })
+        case TOGGLE_TODO:
+            return Object.assign({}, state, {
+                todos: state.todos.map((todo, index) => {
+                    if (index === action.index) {
+                        return Object.assign({}, todo, {
+                            completed: !todo.completed
+                        })
+                    }
+                    return todo
+                })
+            })
         case ADD_TODO:
             return [
                 { id: state.reduce((maxId, todo) => Math.max(todo.id, maxId), -1) + 1, text: action.payload.text },
@@ -35,10 +50,6 @@ function todos(state = initialState, action) {
             return state;
     }
 }
-
-// function todos(state = initialState, action) {
-//     return { todos: todos(state.todos, action) }
-// }
 
 const todoStore = combineReducers({ todos })
 
