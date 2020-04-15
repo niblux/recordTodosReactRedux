@@ -7,7 +7,8 @@ const initialState = [
     {
         id: 1,
         text: 'Cashews',
-    // },
+        type: ''
+    },
 ]
 
 // function getActionState(state = '', actionState) {
@@ -23,7 +24,7 @@ function todos(state = initialState, action) {
                 ...state
             ]
         case REMOVE_TODO:
-            return state.filter(item => item.id !== action.id);
+            return state.filter(item => item.type = action.type && item.id !== action.id);
         case UPDATE_TODO:
             return state.map(todo =>
                 todo.id === action.id ?
