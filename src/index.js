@@ -9,8 +9,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 const logger = store => next => action => {
     console.log('dispatching', action);
     let result = next(action);
-    console.log('result', result);
-    console.log('next state', store.getState());
+    // console.log('result', result);
     return result;
 }
 

@@ -6,7 +6,7 @@ export const UPDATE_TODO = 'UPDATE_TODO';
 export function addTodo(payload) {
     return {
         type: ADD_TODO,
-        payload
+        payload,
     }
 }
 

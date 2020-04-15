@@ -11,16 +11,19 @@ const initialState = [
     },
 ]
 
-// function getActionState(state = '', actionState) {
-//     console.log('actionState', actionState);
-//     return actionState;
-// }
+function getActionState(state = '', actionState) {
+    return actionState;
+}
 
 function todos(state = initialState, action) {
+    getActionState('', action.type)
     switch (action.type) {
         case ADD_TODO:
             return [
-                { id: state.reduce((maxId, todo) => Math.max(todo.id, maxId), -1) + 1, text: action.payload.text },
+                {
+                    id: state.reduce((maxId, todo) => Math.max(todo.id, maxId), -1) + 1,
+                    text: action.payload.text,
+                },
                 ...state
             ]
         case REMOVE_TODO:
@@ -40,6 +43,6 @@ function todos(state = initialState, action) {
 //     return { todos: todos(state.todos, action) }
 // }
 
-const todoStore = combineReducers({ todos })
+const todoStore = combineReducers({ todos, getActionState })
 
 export default todoStore; 
