@@ -1,76 +1,23 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { addTodo, updateTodo, removeTodo } from '../actions/index';
+import { addTodo, updateTodo, removeTodo, startRecording, stopRecording, saveRecordings, clearRecordings } from '../actions/index';
 import Record from './Record';
-// import store from '../index';
 import '../App.css'
 
-function App({ todos, dispatch, getActionState }) {
-    // console.log('getActionState', getActionState);
-
-    const recs = [
-        // {
-        //     id: 1,
-        //     name: 'Test todo',
-        // },
-        // {
-        //     id: 2,
-        //     name: 'Test todo',
-        // },
-        // {
-        //     id: 3,
-        //     name: 'Test todo',
-        // },
-        // {
-        //     id: 4,
-        //     name: 'Test todo',
-        // },
-    ]
+function App({ todos, dispatch, recordingState, recordings }) {
 
     let input = useRef('null');
-    let parent = useRef('null');
 
-    const [editing, setEditing] = useState(null);
+
+    const recs = [];
+
+    const [editing, setEditing] = useState();
     const [events, setEvents] = useState([]);
-    const [recordedTodos, saveRecords] = useState(recs);
     const [playback, setPlayback] = useState([]);
 
     const recordInput = (e) => {
         const { value } = e.target;
         setEvents([...events, { value }]);
-    }
-
-    useEffect(() => {
-
-    })
-
-    function processTodos() {
-        let tempArr = []
-        switch (getActionState.type) {
-            case 'ADD_TODO':
-                console.log(todos);
-                saveRecords(todos)
-                // console.log('><><><>', recordedTodos);
-                playEvent(todos)
-            case 'REMOVE_TODO':
-                tempArr = tempArr.filter(remove => getActionState.id !== remove.id);
-                console.log(todos);
-                saveRecords(todos)
-                playEvent(todos)
-            default:
-                break;
-        }
-        return recordedTodos
-    }
-
-
-
-    const playEvent = (result) => {
-        console.log('value to playback', result);
-        let counter = 1000;
-        return result.map(item => {
-            setTimeout(() => setPlayback([...playback, item]), counter = counter + 1000);
-        })
     }
 
     // add
@@ -80,13 +27,21 @@ function App({ todos, dispatch, getActionState }) {
         }
         const { name, value } = e.target;
         if (e && e.key === 'Enter') {
-            dispatch(addTodo({ [name]: value }));
+            // store record of action 
+            // dispatch(saveRecordings(getActionState))
+            // check if were recording 
+            recordingState ? dispatch(addTodo({ [name]: value, type: actionState, isRecording: true }))
+                : dispatch(addTodo({ [name]: value, type: actionState, isRecording: false }))
             input.current.value = '';
         }
     }
 
     // delete
-    const remove = (e, id) => dispatch(removeTodo(id));
+    const remove = (e, id) => {
+        // dispatch(saveRecordings(getActionState))
+        recordingState ? dispatch(removeTodo(id, actionState, true))
+            : dispatch(removeTodo(id, actionState, false));
+    }
 
     // set input to edit mode 
     const edit = (e, id) => {
@@ -97,17 +52,41 @@ function App({ todos, dispatch, getActionState }) {
     const update = (e, todo) => {
         const { value } = e.target;
         if (e.key === 'Enter') {
-            dispatch(updateTodo(todo.id, value));
+            // dispatch(saveRecordings(getActionState))
+            recordingState ? dispatch(updateTodo(todo.id, value, true))
+                : dispatch(updateTodo(todo.id, value, false));
             setEditing(null);
         }
     };
 
+    const filterRecorded = () => {
+        return todos.filter(todo => todo.isRecording === true);
+    }
+
+
+    // const play = (recordedTodos) => {
+
+    // }
+
+    const record = () => {
+        dispatch(startRecording(true));
+    }
+
+    const stop = () => {
+        dispatch(stopRecording(false));
+    }
+
+    const clear = () => {
+        dispatch(clearRecordings());
+    }
+
+    useEffect(() => {
+
+    })
 
     return (
         <>
             <div>
-                <Record events={events} />
-
                 <div className="container">
 
                     <div className="item-a">
@@ -125,9 +104,13 @@ function App({ todos, dispatch, getActionState }) {
                                 )
                             }
                         </ul>
-                        <button onClick={(e) => processTodos()} >Play todos</button>
+                        <button onClick={record} >Record</button>
+                        <button onClick={clear} >Clear</button>
+                        <button onClick={stop}>Stop</button>
+                        <button>Play</button>
                     </div>
                     <div className='item-b'>
+                        <Record events={events} />
                         <p><input type="text" id="text" name="text"></input></p>
                         <ul>
                             {
@@ -148,7 +131,8 @@ function App({ todos, dispatch, getActionState }) {
 const mapStateToProps = state => {
     return {
         todos: state.todos,
-        getActionState: state.getActionState
+        recordingState: state.recordingState,
+        recordings: state.saveRecordings
     }
 };
 

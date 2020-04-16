@@ -7,9 +7,8 @@ import todoStore from './reducers/index';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
 const logger = store => next => action => {
-    console.log('dispatching', action);
+    // console.log('dispatching', action);
     let result = next(action);
-    // console.log('result', result);
     return result;
 }
 
@@ -40,6 +39,7 @@ const saveState = (state) => {
 
 store.subscribe(() => {
     saveState(store.getState())
+    // console.log('store.getState()', store.getState());
 })
 
 const currentState = store.getState();
