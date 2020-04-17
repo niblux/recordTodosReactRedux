@@ -7,7 +7,7 @@ import { combineReducers } from 'redux';
 const initialState = [
     {
         id: 1,
-        name: 'Stuff to do',
+        text: 'Stuff to do',
         description: 'Doing more stuff',
         type: '',
         isRecording: false
@@ -39,36 +39,33 @@ function saveRecordings(state = [], action) {
     }
 }
 
-function getActionType(state = '', action) {
-    switch (action.type) {
-        case GET_ACTION_TYPE:
-            return action.type
-        default:
-            return state;
-    }
-}
+
+
+// you would have to dispatch getActionType
+// that would return the type 
+// which you coul make availanle as a promp
+// and use that or store them
 
 function todos(state = initialState, action) {
+    // getActionType({}, action)
     switch (action.type) {
         case GET_ACTION_TYPE:
-            return action.type
+            return action.type;
         case _ADD_TODO:
             return [
                 {
                     id: state.reduce((maxId, todo) => Math.max(todo.id, maxId), -1) + 1,
                     text: action.payload.text,
-                    type: action.payload.type,
                     isRecording: action.payload.isRecording
                 },
                 ...state
             ]
         case _REMOVE_TODO:
-            return state.filter(item => item.isRecording = action.isRecording, item.type = action.payload.type
-                && item.id !== action.id);
+            return state.filter(item => item.id !== action.id);
         case _UPDATE_TODO:
             return state.map(todo =>
                 todo.id === action.id ?
-                    { ...todo, text: action.text, type: action.payload.type, isRecording: action.isRecording } :
+                    { ...todo, text: action.text, isRecording: action.isRecording } :
                     todo
             )
 
@@ -77,6 +74,6 @@ function todos(state = initialState, action) {
     }
 }
 
-const todoStore = combineReducers({ todos, saveRecordings, recordingState, getActionType })
+const todoStore = combineReducers({ todos, saveRecordings, recordingState })
 
 export default todoStore; 

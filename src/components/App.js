@@ -1,17 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { addTodo, updateTodo, removeTodo, startRecording, stopRecording, saveRecordings, clearRecordings } from '../actions/index';
+import { addTodo, updateTodo, removeTodo, startRecording, stopRecording, saveRecordings, clearRecordings, getActionType } from '../actions/index';
 import Record from './Record';
 import '../App.css'
 
-function App({ todos, dispatch, recordingState, recordings }) {
+function App({ todos, dispatch, recordingState }) {
 
     let input = useRef('null');
 
 
     const recs = [];
 
-    const [editing, setEditing] = useState();
+    const [editing, setEditing] = useState({});
     const [events, setEvents] = useState([]);
     const [playback, setPlayback] = useState([]);
 
@@ -22,6 +22,7 @@ function App({ todos, dispatch, recordingState, recordings }) {
 
     // add
     const add = (e) => {
+        // dispatch(getActionType());
         if (e.target.value == '') {
             return
         }
@@ -30,17 +31,17 @@ function App({ todos, dispatch, recordingState, recordings }) {
             // store record of action 
             // dispatch(saveRecordings(getActionState))
             // check if were recording 
-            recordingState ? dispatch(addTodo({ [name]: value, type: actionState, isRecording: true }))
-                : dispatch(addTodo({ [name]: value, type: actionState, isRecording: false }))
+            recordingState ? dispatch(addTodo({ [name]: value, isRecording: true }))
+                : dispatch(addTodo({ [name]: value, isRecording: false }))
             input.current.value = '';
         }
     }
 
     // delete
     const remove = (e, id) => {
-        // dispatch(saveRecordings(getActionState))
-        recordingState ? dispatch(removeTodo(id, actionState, true))
-            : dispatch(removeTodo(id, actionState, false));
+        dispatch(saveRecordings(getActionState()))
+        recordingState ? dispatch(removeTodo(id, true))
+            : dispatch(removeTodo(id, false));
     }
 
     // set input to edit mode 
@@ -55,7 +56,7 @@ function App({ todos, dispatch, recordingState, recordings }) {
             // dispatch(saveRecordings(getActionState))
             recordingState ? dispatch(updateTodo(todo.id, value, true))
                 : dispatch(updateTodo(todo.id, value, false));
-            setEditing(null);
+            setEditing({});
         }
     };
 
@@ -79,10 +80,6 @@ function App({ todos, dispatch, recordingState, recordings }) {
     const clear = () => {
         dispatch(clearRecordings());
     }
-
-    useEffect(() => {
-
-    })
 
     return (
         <>
@@ -110,7 +107,7 @@ function App({ todos, dispatch, recordingState, recordings }) {
                         <button>Play</button>
                     </div>
                     <div className='item-b'>
-                        <Record events={events} />
+                        {/* <Record events={events} /> */}
                         <p><input type="text" id="text" name="text"></input></p>
                         <ul>
                             {
@@ -132,7 +129,7 @@ const mapStateToProps = state => {
     return {
         todos: state.todos,
         recordingState: state.recordingState,
-        recordings: state.saveRecordings
+        recordings: state.saveRecordings,
     }
 };
 

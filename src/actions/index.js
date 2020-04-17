@@ -13,11 +13,11 @@ export function addTodo(payload) {
 }
 
 export function removeTodo(id, isRecording) {
-    return { type: _REMOVE_TODO, id, type, isRecording }
+    return { type: _REMOVE_TODO, id, isRecording }
 }
 
 export function updateTodo(id, text, isRecording) {
-    return { type: _UPDATE_TODO, id, text, type, isRecording }
+    return { type: _UPDATE_TODO, id, text, isRecording }
 }
 
 export function startRecording(isRecording) {
@@ -39,3 +39,4 @@ export function clearRecordings(payload) {
 export function getActionType(type) {
     return { type: GET_ACTION_TYPE, type }
 }
+

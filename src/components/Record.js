@@ -33,7 +33,7 @@ function Record(props) {
         clearTimeout(timers.pop());
     }
 
-    useEffect(() => { storeEvents() }, [props.events]);
+    // useEffect(() => { storeEvents() }, [props.events]);
 
     return (
         <>
