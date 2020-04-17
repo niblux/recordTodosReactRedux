@@ -1,13 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { addTodo, updateTodo, removeTodo, startRecording, stopRecording, saveRecordings, clearRecordings, getActionType } from '../actions/index';
+import {
+    addTodo, updateTodo, removeTodo, startRecording,
+    stopRecording, clearRecordings, clearTodos
+} from '../actions/index';
 import Record from './Record';
 import '../App.css'
 
-function App({ todos, dispatch, recordingState }) {
+function App({ todos, dispatch, recordingState, recordings }) {
+    // console.log('recordings', recordings);
 
     let input = useRef('null');
-
 
     const recs = [];
 
@@ -22,24 +25,20 @@ function App({ todos, dispatch, recordingState }) {
 
     // add
     const add = (e) => {
-        // dispatch(getActionType());
         if (e.target.value == '') {
-            return
+            return;
         }
         const { name, value } = e.target;
         if (e && e.key === 'Enter') {
-            // store record of action 
-            // dispatch(saveRecordings(getActionState))
             // check if were recording 
-            recordingState ? dispatch(addTodo({ [name]: value, isRecording: true }))
-                : dispatch(addTodo({ [name]: value, isRecording: false }))
+            recordingState ? dispatch(addTodo({ [name]: value, type: '_ADD_TODO', isRecording: true }))
+                : dispatch(addTodo({ [name]: value, type: '_ADD_TODO', isRecording: false }))
             input.current.value = '';
         }
     }
 
     // delete
     const remove = (e, id) => {
-        dispatch(saveRecordings(getActionState()))
         recordingState ? dispatch(removeTodo(id, true))
             : dispatch(removeTodo(id, false));
     }
@@ -61,13 +60,28 @@ function App({ todos, dispatch, recordingState }) {
     };
 
     const filterRecorded = () => {
-        return todos.filter(todo => todo.isRecording === true);
+        return recordings.filter(todo => todo.isRecording);
     }
 
 
-    // const play = (recordedTodos) => {
-
-    // }
+    const play = (recordedTodos) => {
+        // console.log(recordedTodos)
+        let counter = 1000;
+        return recordedTodos.map(rec => {
+            switch (rec.type) {
+                case '_ADD_TODO':
+                    setTimeout(() => dispatch(addTodo({ text: rec.text })), counter = counter + 1000);
+                    break;
+                case '_UPDATE_TODO':
+                    setTimeout(() => dispatch(updateTodo(rec.id, rec.text, null)), counter = counter + 1000);
+                    break;
+                case '_REMOVE_TODO':
+                    break;
+                default:
+                    break;
+            }
+        })
+    }
 
     const record = () => {
         dispatch(startRecording(true));
@@ -78,7 +92,8 @@ function App({ todos, dispatch, recordingState }) {
     }
 
     const clear = () => {
-        dispatch(clearRecordings());
+        dispatch(clearTodos())
+        // dispatch(clearRecordings());
     }
 
     return (
@@ -94,7 +109,8 @@ function App({ todos, dispatch, recordingState }) {
                                     <input onKeyPress={e => update(e, todo, index)} key={todo.id} defaultValue={todo.text} type="text" id="text" name="text" />
                                     :
                                     <>
-                                        <li onClick={(e) => edit(e, todo.id)} key={todo.id}>{todo.text}
+                                        <li onClick={(e) => edit(e, todo.id)} key={todo.id}>
+                                            {todo.text}
                                             <button onClick={(e) => remove(e, todo.id)}>X</button>
                                         </li>
                                     </>
@@ -104,16 +120,16 @@ function App({ todos, dispatch, recordingState }) {
                         <button onClick={record} >Record</button>
                         <button onClick={clear} >Clear</button>
                         <button onClick={stop}>Stop</button>
-                        <button>Play</button>
+                        <button onClick={(e) => play(filterRecorded())} >Play</button>
                     </div>
                     <div className='item-b'>
                         {/* <Record events={events} /> */}
                         <p><input type="text" id="text" name="text"></input></p>
                         <ul>
                             {
-                                playback && playback.map((recs, index) => {
-                                    return <li key={index}>{recs.text}</li>
-                                })
+                                playback && playback.map((recs, index) => (
+                                    <li key={index}>{recs.text}</li>
+                                ))
                             }
                         </ul>
                     </div>

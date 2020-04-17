@@ -5,10 +5,11 @@ export const START_RECORDING = 'START_RECORDING';
 export const STOP_RECORDING = 'STOP_RECORDING';
 export const SAVE_RECORDINGS = 'SAVE_RECORDINGS';
 export const CLEAR_RECORDINGS = 'CLEAR_RECORDINGS';
-export const GET_ACTION_TYPE = 'GET_ACTION_TYPE';
+export const _CLEAR_TODOS = '_CLEAR_TODOS';
 
 
 export function addTodo(payload) {
+    console.log('payload', payload);
     return { type: _ADD_TODO, payload }
 }
 
@@ -18,6 +19,10 @@ export function removeTodo(id, isRecording) {
 
 export function updateTodo(id, text, isRecording) {
     return { type: _UPDATE_TODO, id, text, isRecording }
+}
+
+export function clearTodos(payload) {
+    return { type: _CLEAR_TODOS, payload }
 }
 
 export function startRecording(isRecording) {
@@ -34,9 +39,5 @@ export function saveRecordings(payload) {
 
 export function clearRecordings(payload) {
     return { type: CLEAR_RECORDINGS, payload }
-}
-
-export function getActionType(type) {
-    return { type: GET_ACTION_TYPE, type }
 }
 

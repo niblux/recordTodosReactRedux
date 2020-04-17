@@ -1,8 +1,9 @@
 import {
     _ADD_TODO, _REMOVE_TODO, _UPDATE_TODO, START_RECORDING, SAVE_RECORDINGS,
-    STOP_RECORDING, CLEAR_RECORDINGS, GET_ACTION_TYPE
+    STOP_RECORDING, CLEAR_RECORDINGS, _CLEAR_TODOS
 } from '../actions';
 import { combineReducers } from 'redux';
+import { isEmpty } from '../helpers';
 
 const initialState = [
     {
@@ -26,10 +27,21 @@ function recordingState(state = false, action) {
 }
 
 function saveRecordings(state = [], action) {
+    // console.log('action in saverecording', action);
     switch (action.type) {
-        case SAVE_RECORDINGS:
+        case _ADD_TODO:
             return [
                 action.payload,
+                ...state
+            ];
+        case _REMOVE_TODO:
+            return [
+                action,
+                ...state
+            ];
+        case _UPDATE_TODO:
+            return [
+                action,
                 ...state
             ];
         case CLEAR_RECORDINGS:
@@ -39,7 +51,18 @@ function saveRecordings(state = [], action) {
     }
 }
 
-
+// function getActionType(state = {}, action) {
+//     switch (action.type) {
+//         case _ADD_TODO:
+//             return { ...state, type: action };
+//         case _UPDATE_TODO:
+//             return { ...state, type: action };
+//         case _REMOVE_TODO:
+//             return { ...state, type: action };
+//         default:
+//             return state;
+//     }
+// }
 
 // you would have to dispatch getActionType
 // that would return the type 
@@ -47,10 +70,8 @@ function saveRecordings(state = [], action) {
 // and use that or store them
 
 function todos(state = initialState, action) {
-    // getActionType({}, action)
+    console.log('action', action);
     switch (action.type) {
-        case GET_ACTION_TYPE:
-            return action.type;
         case _ADD_TODO:
             return [
                 {
@@ -68,7 +89,8 @@ function todos(state = initialState, action) {
                     { ...todo, text: action.text, isRecording: action.isRecording } :
                     todo
             )
-
+        case _CLEAR_TODOS:
+            return [];
         default:
             return state;
     }
