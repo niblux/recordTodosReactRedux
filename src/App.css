@@ -1,26 +1,69 @@
+ @font-face {
+     font-family: 'Quicksand';
+     src:  url('./assets/fonts/Quicksand-Regular.ttf') format('woff2'),
+           url('./assets/fonts/Quicksand-Regular.ttf') format('woff');
+     font-weight: 600;
+     font-style: normal;
+   }
 
+.header {
+  padding:10px;
+  grid-column: span 8;
+  background:red;
+  margin:0;
+}
 
 .container {
+    font-family: 'Quicksand';
     display: grid;
-    grid-template-columns: 100px 1fr 1fr 100px;
-    grid-template-rows: 25% auto;
+    grid-template-columns: 1fr repeat(6, minmax(auto, 10em)) 1fr;
+    grid-template-rows: minmax(1em, auto) 1fr auto minmax(1em, auto);
+}
+
+.item-a {
+    /* display: grid; */
+    border:solid 1px black;
+    padding: 10px;
+    grid-column: 3/7;
+    margin-top: 50px;
+  }
+
+li button {
+  float: right;
+}
+
+.item-a ul {
+  padding: 0;
 }
 
 
-.item-a {
-    grid-column-start: 2;
-    grid-column-end: five;
-    grid-row-start: row1-start;
-    grid-row-end: 3;
-    border:solid 1px black;
-    padding: 10px;
-  }
+.item-a ul li {
+  border: solid 1px #efefef;
+  width: 95%;
+  padding: 10px;
+  grid-column: 3/6;
+  list-style: none;
+}
 
-  .item-b {
-    grid-column-start: 3;
-    grid-column-end: five;
-    grid-row-start: row1-start;
-    grid-row-end: 3;
-    border:solid 1px black;
-    padding: 10px;
-  }
+.nameInput {
+  border:solid 1px #efefef;
+  width: 95%;
+  padding:10px;
+}
+
+.completed {
+  text-decoration: line-through;
+}
+
+.actions {
+  grid-column: 6/7;
+}
+
+button.mainControls {
+  border: none;
+  background:red;
+  margin:10px;
+  width: 100px;
+  border-radius: 5px;
+  padding: 10px;
+}

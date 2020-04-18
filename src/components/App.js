@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { connect } from "react-redux";
 import {
-  addTodo, updateTodo, removeTodo, startRecording, stopRecording, clearRecordings, clearTodos,
+  addTodo, updateTodo, removeTodo, startRecording, stopRecording, clearRecordings, clearTodos, completeTodo,
 } from "../actions/index";
 import Record from "./Record";
 import "../App.css";
@@ -11,10 +11,12 @@ function App({ todos, dispatch, recordingState, recordings }) {
 
   let nameInput = useRef("null");
   // let descInput = useRef("null");
+  let toggle = false;
 
   const [editing, setEditing] = useState({});
   const [events, setEvents] = useState([]);
   const [inputPlayback, setInputPlayback] = useState([]);
+  const [completed, setComplete] = useState(toggle);
 
   /* handle input playback */
 
@@ -31,6 +33,14 @@ function App({ todos, dispatch, recordingState, recordings }) {
       return prev
     }, [])
   }
+
+  /**
+   *
+   * 1. type input
+   * 2. input is stored
+   * 3.  
+   *
+   */
 
   const playbackInput = (result) => {
     let counter = 1000;
@@ -64,8 +74,6 @@ function App({ todos, dispatch, recordingState, recordings }) {
   };
 
   const edit = (e, id) => {
-    console.log('id', id);
-    console.log('e', e);
     setEditing(id);
   };
 
@@ -80,6 +88,12 @@ function App({ todos, dispatch, recordingState, recordings }) {
     }
   };
 
+  const checkTodo = (e, todo) => {
+    console.log('todo', todo);
+    !completed ? setComplete(true) : setComplete(false);
+    dispatch(completeTodo(todo));
+  }
+
 
   /* Recording and Playback of TODOS CRUD  */
 
@@ -93,43 +107,49 @@ function App({ todos, dispatch, recordingState, recordings }) {
 
     console.log('recordedTodos', recordedTodos);
     let counter = 1000;
-    playbackInput(processUserInput());
 
     return recordedTodos.map((rec, index, array) => {
 
+      return new Promise((resolve, reject) => {
+        // Promise #1
+        console.log('events', events.length);
+        if (rec.type === "_ADD_TODO" && events.length >= 1) {
+          console.log('do i pass the condition');
 
-      if (rec.type === "_ADD_TODO") {
-        setTimeout(
-          () => dispatch(addTodo({ name: rec.name })),
-          (counter = counter + 1000)
-        );
-      }
+          playbackInput(processUserInput());
+          setTimeout(
+            () => dispatch(addTodo({ id: rec.id, name: rec.name })),
+            (counter = counter + 1000)
+          );
+        }
+        resolve();
+      }).then((result) => {
+        // Promise #2
+        if (rec.type === "_UPDATE_TODO") {
+          console.log('do i get here');
+          setTimeout(
+            () => dispatch(updateTodo(rec.id, rec.name)),
+            (counter = counter + 1000)
+          );
+        }
+        return result;
+      }).then((result) => {
+        // Promise #3
+        if (rec.type === "_REMOVE_TODO") {
+          console.log('do i get here');
+          setTimeout(
+            () => dispatch(removeTodo(rec.id)),
+            (counter = counter + 1000)
+          );
+        }
+        return result;
+      }); // ... and so on!
 
 
-      // if (rec.type === "_REMOVE_TODO") {
-      //   setTimeout(
-      //     () => dispatch(remove(rec.id, null)),
-      //     (counter = counter + 1000)
-      //   );
-      // }
 
-      // switch (rec.type) {
-      //   case "_ADD_TODO":
 
-      //   case "_UPDATE_TODO":
-      //     setTimeout(
-      //       () => dispatch(updateTodo(rec.id, rec.name, null)),
-      //       (counter = counter + 1000)
-      //     );
-      //   case "_REMOVE_TODO":
-      //     setTimeout(
-      //       () => dispatch(remove(rec.id, null)),
-      //       (counter = counter + 1000)
-      //     );
-      //     break;
-      //   default:
-      //     break;
-      // }
+
+
     });
   };
 
@@ -147,42 +167,49 @@ function App({ todos, dispatch, recordingState, recordings }) {
   return (
     <>
       <div>
+        <header className="header">Menu</header>
         <div className="container">
           <div className="item-a">
+            <h1>Todo List</h1>
             <p>
-              <input ref={nameInput} onChange={(e) => recordInput(e)} onKeyPress={add} type="text" id="name" name="name"></input>
+              <input className="nameInput" ref={nameInput} onChange={(e) => recordInput(e)} onKeyPress={add} type="text" name="name"></input>
             </p>
             <ul>
               {todos &&
                 todos.map((todo, index) =>
                   editing && editing === todo.id ? (
-                    <input onKeyPress={(e) => update(e, todo, index)} key={todo.id} defaultValue={todo.name} type="text" id="name" name="name" />
+                    <input className="nameInput" onKeyPress={(e) => update(e, todo, index)} key={todo.id} defaultValue={todo.name} type="text" id="name" name="name" />
                   ) : (
                       <>
-                        <li onClick={(e) => edit(e, todo.id)} key={todo.id}>
+                        <li className={`${completed ? 'completed' : ''}`} onClick={(e) => edit(e, todo.id)} key={todo.id}>
                           {todo.name}
-                          {/* <p>{todo.description}</p> */}
-                          <button onClick={(e) => remove(e, todo.id)}>X</button>
                         </li>
+                        <div className="actions">
+                          <button onClick={(e) => remove(e, todo.id)}>X</button>
+                          <button className="check" value={completed} onClick={(e) => checkTodo(e, todo)} >/-</button>
+                        </div>
+
                       </>
                     )
                 )}
             </ul>
-            <button onClick={record}>Record</button>
-            <button onClick={clear}>Clear</button>
-            <button onClick={stop}>Stop</button>
-            <button onClick={(e) => play(filterRecorded())}>Play</button>
+            <div class="">
+              <button className="mainControls" onClick={record}>Record</button>
+              <button className="mainControls" onClick={clear}>Clear</button>
+              <button className="mainControls" onClick={stop}>Stop</button>
+              <button className="mainControls" onClick={(e) => play(filterRecorded())}>Play</button>
+            </div>
           </div>
-          <div className="item-b">
-            {/* DEBUGGING PLAYBACK */}
-            {/* <ul>
+          {/* <div className="item-b">
+            DEBUGGING PLAYBACK
+            <ul>
               {inputPlayback &&
                 inputPlayback.map((recs, index) => <p key={index}>
                   {console.log('recs', recs)}
                   {recs}
                 </p>)}
-            </ul> */}
-          </div>
+            </ul>
+          </div> */}
         </div>
       </div>
     </>

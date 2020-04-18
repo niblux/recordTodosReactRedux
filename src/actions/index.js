@@ -6,6 +6,7 @@ export const STOP_RECORDING = "STOP_RECORDING";
 export const SAVE_RECORDINGS = "SAVE_RECORDINGS";
 export const CLEAR_RECORDINGS = "CLEAR_RECORDINGS";
 export const _CLEAR_TODOS = "_CLEAR_TODOS";
+export const COMPLETE_TODO = "COMPLETE_TODO";
 
 export function addTodo(payload) {
   console.log("payload", payload);
@@ -22,6 +23,11 @@ export function updateTodo(id, name, isRecording) {
 
 export function clearTodos(payload) {
   return { type: _CLEAR_TODOS, payload };
+}
+
+export function completeTodo(payload) {
+  console.log('payload', payload);
+  return { type: COMPLETE_TODO, payload };
 }
 
 export function startRecording(isRecording) {

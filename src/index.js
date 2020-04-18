@@ -41,6 +41,7 @@ store.subscribe(() => {
 })
 
 const currentState = store.getState();
+console.log('currentState', currentState);
 
 const unsubscribe = store.subscribe(() => console.log('current State', currentState));
 

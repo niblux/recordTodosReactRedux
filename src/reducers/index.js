@@ -6,6 +6,7 @@ import {
   STOP_RECORDING,
   CLEAR_RECORDINGS,
   _CLEAR_TODOS,
+  COMPLETE_TODO
 } from "../actions";
 import { combineReducers } from "redux";
 
@@ -17,6 +18,7 @@ const initialState = [
     creationDate: new Date(365 * 24 * 60 * 60 * 1000).toUTCString(),
     type: "",
     isRecording: false,
+    completed: false
   },
 ];
 
@@ -32,9 +34,21 @@ function recordingState(state = false, action) {
 }
 
 function saveRecordings(state = [], action) {
+  console.log('action in saveRecordings', action);
   switch (action.type) {
     case _ADD_TODO:
-      return [action.payload, ...state];
+      return [
+        {
+          id: state.reduce((maxId, todo) => Math.max(todo.id, maxId), 0) + 1,
+          name: action.payload.name,
+          type: action.type,
+          // description: action.payload.description,
+          creationDate: new Date().toUTCString(),
+          isRecording: action.payload.isRecording,
+          completed: false
+        },
+        ...state,
+      ];
     case _REMOVE_TODO:
       return [action, ...state];
     case _UPDATE_TODO:
@@ -56,6 +70,7 @@ function todos(state = initialState, action) {
           // description: action.payload.description,
           creationDate: new Date().toUTCString(),
           isRecording: action.payload.isRecording,
+          completed: false
         },
         ...state,
       ];
@@ -74,6 +89,19 @@ function todos(state = initialState, action) {
       );
     case _CLEAR_TODOS:
       return [];
+    case COMPLETE_TODO:
+      console.log('ACTION IN REDUCER', action);
+    // // return [...state, { completed: action.payload.completed }];
+    // return state.map((todo) => {
+    //   console.log('TODO IN REDUCER', todo);
+    //   todo.id === action.payload.id
+    //     ? {
+    //       ...todo,
+    //       completed: !todo.completed
+    //     }
+    //     : todo
+
+    // })
     default:
       return state;
   }
