@@ -1,29 +1,28 @@
 import React from 'react';
 import { useState } from 'react';
 
-function Todo(props) {
-
-    let text = React.createRef();
-
-    let initItems = { id: 0, text: '' };
-
-    const [todos, setTodos] = useState(initItems)
-
-    const handleChange = e => {
-        const { name, value } = e.target;
-        setTodos({ ...todos, [name]: value });
-    };
+function Todo({ todos, remove, update, edit, editing, completed }) {
 
     return (
-        <div>
-            <form onSubmit={(e) => props.addTodos(e, items)}>
-                <div className="form-group">
-                    <label htmlFor="todo">text</label>
-                    <input onChange={handleChange} type="text" className="form-control" ref={text} id="text" name="text" />
-                    <button className="btn btn-info mt-2">Add</button>
-                </div>
-            </form>
-        </div>
+        <>
+            {todos &&
+                todos.map((todo, index) =>
+                    editing && editing === todo.id ? (
+                        <input className="nameInput" onKeyPress={(e) => update(e, todo, index)} key={todo.id} defaultValue={todo.name} type="text" id="name" name="name" />
+                    ) : (
+                            <>
+                                <li className={`${completed ? 'completed' : ''}`} onClick={(e) => edit(e, todo.id)} key={todo.id}>
+                                    {todo.name}
+                                </li>
+                                <div className="actions">
+                                    <button onClick={(e) => remove(e, todo.id)}>X</button>
+                                    <button className="check" value={completed} onClick={(e) => checkTodo(e, todo)} >/-</button>
+                                </div>
+
+                            </>
+                        )
+                )}
+        </>
     )
 };
 

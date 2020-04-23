@@ -26,7 +26,6 @@ export function clearTodos(payload) {
 }
 
 export function completeTodo(payload) {
-  console.log('payload', payload);
   return { type: COMPLETE_TODO, payload };
 }
 

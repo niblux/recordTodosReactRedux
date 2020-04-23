@@ -3,20 +3,19 @@ import { connect } from "react-redux";
 import {
   addTodo, updateTodo, removeTodo, startRecording, stopRecording, clearRecordings, clearTodos, completeTodo,
 } from "../actions/index";
-import Record from "./Record";
 import "../App.css";
+import Todo from "./Todo";
 
 function App({ todos, dispatch, recordingState, recordings }) {
-  // console.log('recordings', recordings);
 
   let nameInput = useRef("null");
-  // let descInput = useRef("null");
   let toggle = false;
 
   const [editing, setEditing] = useState({});
   const [events, setEvents] = useState([]);
   const [inputPlayback, setInputPlayback] = useState([]);
   const [completed, setComplete] = useState(toggle);
+  const [recording, setRecording] = useState(toggle);
 
   /* handle input playback */
 
@@ -25,22 +24,12 @@ function App({ todos, dispatch, recordingState, recordings }) {
     setEvents([...events, { value }]);
   };
 
-  const processUserInput = () => {
-    return events && events.reduce((prev, cur) => {
-      if (cur.value.length >= 1) {
-        return prev.concat(cur.value);
-      }
-      return prev
-    }, [])
-  }
-
-  /**
-   *
-   * 1. type input
-   * 2. input is stored
-   * 3.  
-   *
-   */
+  const processedInput = events && events.reduce((prev, cur) => {
+    if (cur.value.length >= 1) {
+      return prev.concat(cur.value);
+    }
+    return prev
+  }, [])
 
   const playbackInput = (result) => {
     let counter = 1000;
@@ -49,12 +38,23 @@ function App({ todos, dispatch, recordingState, recordings }) {
         setInputPlayback([...inputPlayback, item])
         nameInput.current.value = item;
       }, counter = counter + 1000);
+      setEvents([])
     })
   }
+
+  /**
+   *
+   * 1. type input
+   * 2. input is stored
+   * 3. loop through recorded items 
+   * 4. check if add_todo
+   * 5. playback input
+   */
 
   /* ----- */
 
   /* TODOS CRUD  */
+
   const add = (e) => {
     if (e.target.value == "") return;
     const { name, value } = e.target;
@@ -80,7 +80,6 @@ function App({ todos, dispatch, recordingState, recordings }) {
   const update = (e, todo) => {
     const { value } = e.target;
     if (e.key === "Enter") {
-      // dispatch(saveRecordings(getActionState))
       recordingState
         ? dispatch(updateTodo(todo.id, value, true))
         : dispatch(updateTodo(todo.id, value, false));
@@ -89,7 +88,6 @@ function App({ todos, dispatch, recordingState, recordings }) {
   };
 
   const checkTodo = (e, todo) => {
-    console.log('todo', todo);
     !completed ? setComplete(true) : setComplete(false);
     dispatch(completeTodo(todo));
   }
@@ -99,24 +97,34 @@ function App({ todos, dispatch, recordingState, recordings }) {
 
   const filterRecorded = () => {
     return recordings.filter((todo) => todo.isRecording);
+    // return recordings.sort((x, y) => y.creationDate - x.creationDate);
   };
+
 
   const play = (recordedTodos) => {
     // clear todos in prepration of recording playback. 
     dispatch(clearTodos());
 
-    console.log('recordedTodos', recordedTodos);
+    const sorted = recordedTodos.sort((x, y) => {
+      return x.creationDate - y.creationDate;
+    });
+
     let counter = 1000;
 
-    return recordedTodos.map((rec, index, array) => {
+    return sorted.map((rec, index, array) => {
 
       return new Promise((resolve, reject) => {
-        // Promise #1
-        console.log('events', events.length);
-        if (rec.type === "_ADD_TODO" && events.length >= 1) {
-          console.log('do i pass the condition');
 
-          playbackInput(processUserInput());
+        // console.log('processedInput', inputPlayback[inputPlayback - 1]);
+        // if (inputPlayback && inputPlayback.length > 1) {
+        //   const lastItem = inputPlayback[inputPlayback - 1];
+        //   console.log('lastItem', lastItem);
+
+        // }
+        // Promise #1
+        if (rec.type === "_ADD_TODO") {
+
+          playbackInput(processedInput);
           setTimeout(
             () => dispatch(addTodo({ id: rec.id, name: rec.name })),
             (counter = counter + 1000)
@@ -126,7 +134,7 @@ function App({ todos, dispatch, recordingState, recordings }) {
       }).then((result) => {
         // Promise #2
         if (rec.type === "_UPDATE_TODO") {
-          console.log('do i get here');
+          // console.log('do i get here');
           setTimeout(
             () => dispatch(updateTodo(rec.id, rec.name)),
             (counter = counter + 1000)
@@ -136,7 +144,7 @@ function App({ todos, dispatch, recordingState, recordings }) {
       }).then((result) => {
         // Promise #3
         if (rec.type === "_REMOVE_TODO") {
-          console.log('do i get here');
+          // console.log('do i get here');
           setTimeout(
             () => dispatch(removeTodo(rec.id)),
             (counter = counter + 1000)
@@ -145,15 +153,13 @@ function App({ todos, dispatch, recordingState, recordings }) {
         return result;
       }); // ... and so on!
 
-
-
-
-
-
     });
   };
 
-  const record = () => dispatch(startRecording(true));
+  const record = () => {
+    dispatch(startRecording(true));
+    !recording ? setRecording(true) : setRecording(false);
+  }
 
   const stop = () => dispatch(stopRecording(false));
 
@@ -171,29 +177,15 @@ function App({ todos, dispatch, recordingState, recordings }) {
         <div className="container">
           <div className="item-a">
             <h1>Todo List</h1>
+            <button className={`${recording ? 'Rec' : 'notRec'}`}>Recording</button>
             <p>
-              <input className="nameInput" ref={nameInput} onChange={(e) => recordInput(e)} onKeyPress={add} type="text" name="name"></input>
+              <input className={`${completed ? 'completed' : ''}`} ref={nameInput} onChange={(e) => recordInput(e)} onKeyPress={add} type="text" name="name"></input>
             </p>
             <ul>
-              {todos &&
-                todos.map((todo, index) =>
-                  editing && editing === todo.id ? (
-                    <input className="nameInput" onKeyPress={(e) => update(e, todo, index)} key={todo.id} defaultValue={todo.name} type="text" id="name" name="name" />
-                  ) : (
-                      <>
-                        <li className={`${completed ? 'completed' : ''}`} onClick={(e) => edit(e, todo.id)} key={todo.id}>
-                          {todo.name}
-                        </li>
-                        <div className="actions">
-                          <button onClick={(e) => remove(e, todo.id)}>X</button>
-                          <button className="check" value={completed} onClick={(e) => checkTodo(e, todo)} >/-</button>
-                        </div>
-
-                      </>
-                    )
-                )}
+              {/* todo items go here */}
+              <Todo todos={todos} update={update} remove={remove} edit={edit} editing={editing} completed={completed} />
             </ul>
-            <div class="">
+            <div className="">
               <button className="mainControls" onClick={record}>Record</button>
               <button className="mainControls" onClick={clear}>Clear</button>
               <button className="mainControls" onClick={stop}>Stop</button>

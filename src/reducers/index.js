@@ -34,7 +34,7 @@ function recordingState(state = false, action) {
 }
 
 function saveRecordings(state = [], action) {
-  console.log('action in saveRecordings', action);
+  // console.log('action in saveRecordings', action);
   switch (action.type) {
     case _ADD_TODO:
       return [
