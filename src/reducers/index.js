@@ -90,18 +90,13 @@ function todos(state = initialState, action) {
     case _CLEAR_TODOS:
       return [];
     case COMPLETE_TODO:
-      console.log('ACTION IN REDUCER', action);
-    // // return [...state, { completed: action.payload.completed }];
-    // return state.map((todo) => {
-    //   console.log('TODO IN REDUCER', todo);
-    //   todo.id === action.payload.id
-    //     ? {
-    //       ...todo,
-    //       completed: !todo.completed
-    //     }
-    //     : todo
-
-    // })
+      console.log('action.payload.id', action.payload.id);
+      return state.map(todo => (todo.id === action.payload.id)
+        ?
+        { ...todo, completed: !todo.completed }
+        :
+        todo
+      )
     default:
       return state;
   }

@@ -88,7 +88,9 @@ function App({ todos, dispatch, recordingState, recordings }) {
   };
 
   const checkTodo = (e, todo) => {
-    !completed ? setComplete(true) : setComplete(false);
+    console.log('e', e.target);
+    console.log('todo', todo);
+    !todo.completed ? setComplete(false) : setComplete(true);
     dispatch(completeTodo(todo));
   }
 
@@ -111,57 +113,37 @@ function App({ todos, dispatch, recordingState, recordings }) {
 
     let counter = 1000;
 
-    return sorted.map((rec, index, array) => {
+    // const starterPromise = Promise.resolve(null);
+    // const log = result => console.log(result);
+    // await asyncThingsToDo.reduce(
+    //   (p, spec) => p.then(() => runTask(spec).then(log)),
+    //   starterPromise
+    // );
 
-      return new Promise((resolve, reject) => {
+    // // const addingTodos = sorted.filter(todo => todo.type = '_ADD_TODO');
+    // const todosAdding = new Promise((resolve, reject) => {
+    //   sorted.map(todo => {
+    //     if (todo.type === '_ADD_TODO') {
+    //       resolve('resolved cos i found ');
+    //     }
+    //   })
+    // })
 
-        // console.log('processedInput', inputPlayback[inputPlayback - 1]);
-        // if (inputPlayback && inputPlayback.length > 1) {
-        //   const lastItem = inputPlayback[inputPlayback - 1];
-        //   console.log('lastItem', lastItem);
+    // todosAdding.then((res) => {
+    //   console.log('result from promise', res);
+    // })
 
-        // }
-        // Promise #1
-        if (rec.type === "_ADD_TODO") {
-
-          playbackInput(processedInput);
-          setTimeout(
-            () => dispatch(addTodo({ id: rec.id, name: rec.name })),
-            (counter = counter + 1000)
-          );
-        }
-        resolve();
-      }).then((result) => {
-        // Promise #2
-        if (rec.type === "_UPDATE_TODO") {
-          // console.log('do i get here');
-          setTimeout(
-            () => dispatch(updateTodo(rec.id, rec.name)),
-            (counter = counter + 1000)
-          );
-        }
-        return result;
-      }).then((result) => {
-        // Promise #3
-        if (rec.type === "_REMOVE_TODO") {
-          // console.log('do i get here');
-          setTimeout(
-            () => dispatch(removeTodo(rec.id)),
-            (counter = counter + 1000)
-          );
-        }
-        return result;
-      }); // ... and so on!
-
-    });
   };
 
   const record = () => {
     dispatch(startRecording(true));
-    !recording ? setRecording(true) : setRecording(false);
+    setRecording(true);
   }
 
-  const stop = () => dispatch(stopRecording(false));
+  const stop = () => {
+    dispatch(stopRecording(false));
+    setRecording(false);
+  }
 
   const clear = () => {
     dispatch(clearRecordings());
@@ -172,27 +154,33 @@ function App({ todos, dispatch, recordingState, recordings }) {
 
   return (
     <>
-      <div>
-        <header className="header">Menu</header>
-        <div className="container">
-          <div className="item-a">
-            <h1>Todo List</h1>
-            <button className={`${recording ? 'Rec' : 'notRec'}`}>Recording</button>
+      <div className="main-container">
+        <header className="side-header">Menu</header>
+
+        <div className="sub-header">
+          <h1>Todo List</h1>
+          <button className={`${recording ? 'Rec' : 'notRec'}`}>Recording</button>
+        </div>
+
+        <div className="todo-container">
+          <div className="list-items">
             <p>
-              <input className={`${completed ? 'completed' : ''}`} ref={nameInput} onChange={(e) => recordInput(e)} onKeyPress={add} type="text" name="name"></input>
+              <input className="nameInput" ref={nameInput} onChange={(e) => recordInput(e)} onKeyPress={add} type="text" name="name"></input>
             </p>
             <ul>
               {/* todo items go here */}
-              <Todo todos={todos} update={update} remove={remove} edit={edit} editing={editing} completed={completed} />
+              <Todo todos={todos} checkTodo={checkTodo} update={update} remove={remove} edit={edit} editing={editing} completed={completed} />
             </ul>
-            <div className="">
-              <button className="mainControls" onClick={record}>Record</button>
-              <button className="mainControls" onClick={clear}>Clear</button>
-              <button className="mainControls" onClick={stop}>Stop</button>
-              <button className="mainControls" onClick={(e) => play(filterRecorded())}>Play</button>
-            </div>
           </div>
-          {/* <div className="item-b">
+
+          <div className="action-buttons">
+            <button className="mainControls" onClick={record}>Record</button>
+            <button className="mainControls" onClick={clear}>Clear</button>
+            <button className="mainControls" onClick={stop}>Stop</button>
+            <button className="mainControls" onClick={(e) => play(filterRecorded())}>Play</button>
+          </div>
+        </div>
+        {/* <div className="item-b">
             DEBUGGING PLAYBACK
             <ul>
               {inputPlayback &&
@@ -202,7 +190,6 @@ function App({ todos, dispatch, recordingState, recordings }) {
                 </p>)}
             </ul>
           </div> */}
-        </div>
       </div>
     </>
   );
