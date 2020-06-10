@@ -20,10 +20,12 @@
   },
   "homepage": "https://github.com/niblux/truelayerTODO#readme",
   "dependencies": {
+    "babel-jest": "^26.0.1",
     "lodash": "^4.17.15",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-redux": "^7.2.0",
+    "react-test-renderer": "^16.13.1",
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
     "webpack": "^4.42.1"
@@ -37,7 +39,7 @@
     "file-loader": "^6.0.0",
     "html-loader": "^1.1.0",
     "html-webpack-plugin": "^4.2.0",
-    "jest": "^25.3.0",
+    "jest": "^25.5.4",
     "style-loader": "^1.1.3",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3"
